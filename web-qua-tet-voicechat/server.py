@@ -14,7 +14,10 @@ from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from whisperx_service import WhisperXSTTService
+try:
+    from whisperx_service import WhisperXSTTService
+except ImportError:
+    WhisperXSTTService = None
 
 # Load environment variables
 load_dotenv(override=True)

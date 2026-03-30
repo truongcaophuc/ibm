@@ -19,20 +19,38 @@ from pipecat.processors.aggregators.llm_context import LLMContext
 from pipecat.processors.aggregators.llm_response_universal import LLMContextAggregatorPair
 from pipecat.processors.frameworks.rtvi import RTVIConfig, RTVIObserver, RTVIProcessor
 from pipecat.serializers.protobuf import ProtobufFrameSerializer
-from pipecat.services.google.gemini_live.llm import GeminiLiveLLMService
 from pipecat.transports.websocket.fastapi import (
     FastAPIWebsocketParams,
     FastAPIWebsocketTransport,
 )
-from pipecat.services.elevenlabs.tts import ElevenLabsTTSService, ElevenLabsHttpTTSService
-from pipecat.services.elevenlabs.stt import ElevenLabsRealtimeSTTService, ElevenLabsSTTService
 from pipecat.services.openai.llm import OpenAILLMService
 
-from whisperx_service import WhisperXSTTService, WhisperHallucinationFilter
+# Optional imports - may not be available in light Docker image
+try:
+    from pipecat.services.google.gemini_live.llm import GeminiLiveLLMService
+except ImportError:
+    GeminiLiveLLMService = None
+
+try:
+    from pipecat.services.elevenlabs.tts import ElevenLabsTTSService, ElevenLabsHttpTTSService
+    from pipecat.services.elevenlabs.stt import ElevenLabsRealtimeSTTService, ElevenLabsSTTService
+except ImportError:
+    ElevenLabsTTSService = ElevenLabsHttpTTSService = None
+    ElevenLabsRealtimeSTTService = ElevenLabsSTTService = None
+
+try:
+    from whisperx_service import WhisperXSTTService, WhisperHallucinationFilter
+except ImportError:
+    WhisperXSTTService = WhisperHallucinationFilter = None
+
+try:
+    from whisperx_api_client import WhisperXAPISTTService
+except ImportError:
+    WhisperXAPISTTService = None
+
 from custom_http_tts_service import CustomHttpTTSService
 from n8n_processor import N8NProcessor
-from n8n_processor_llm import N8NLLMService,ResponseMode
-from whisperx_api_client import WhisperXAPISTTService
+from n8n_processor_llm import N8NLLMService, ResponseMode
 from qwen_api_client import QwenChatSTTService
 from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
 from pipecat.serializers.twilio import TwilioFrameSerializer
