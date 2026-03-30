@@ -1,0 +1,3 @@
+ Chạy Faster-Whisper với score (app2.py)
+
+  APP_FILE=app2.py docker-compose up -d

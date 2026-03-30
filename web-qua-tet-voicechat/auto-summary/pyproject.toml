@@ -1,0 +1,24 @@
+[project]
+name = "evn-outage-demo"
+version = "0.1.0"
+description = "Voice AI bot built with Pipecat"
+requires-python = ">=3.10"
+dependencies = [
+    "pipecat-ai[daily,elevenlabs,groq,runner,silero,webrtc,websocket,tracing]",
+    "pipecat-ai-whisker",
+    "pipecat-ai-tail",
+    "pipecatcloud>=0.2.12",
+    "pipecat-ai-flows",
+    "opentelemetry-exporter-otlp-proto-http",
+]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.404,<2",
+    "ruff>=0.12.11,<1",
+]
+
+[tool.ruff]
+line-length = 100
+[tool.ruff.lint]
+select = ["I"]

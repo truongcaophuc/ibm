@@ -1,0 +1,32 @@
+@import url('https://1.www.s81c.com/common/carbon/plex/sans.css');
+@import url('https://1.www.s81c.com/common/carbon/plex/mono.css');
+
+:root {
+  --bg: #ffffff; --bg-secondary: #f4f4f4; --bg-card: #ffffff; --bg-card-hover: #f0f0f0;
+  --text: #161616; --text-secondary: #525252; --text-muted: #8d8d8d;
+  --border: #e0e0e0; --blue: #0f62fe; --purple: #8a3ffc;
+  --gradient: linear-gradient(135deg, #0f62fe, #8a3ffc);
+  --gradient-btn: linear-gradient(135deg, #6929c4, #0f62fe);
+  --nav-bg: rgba(255,255,255,0.85);
+  --hero-glow1: rgba(15,98,254,0.06); --hero-glow2: rgba(138,63,252,0.04);
+  --video-border: #e0e0e0; --video-bg: #f4f4f4;
+}
+[data-theme="dark"] {
+  --bg: #0d0d0d; --bg-secondary: #111; --bg-card: #161616; --bg-card-hover: #1e1e1e;
+  --text: #f4f4f4; --text-secondary: #c6c6c6; --text-muted: #8d8d8d;
+  --border: #393939; --blue: #4589ff; --purple: #a56eff;
+  --gradient: linear-gradient(135deg, #4589ff, #a56eff);
+  --gradient-btn: linear-gradient(135deg, #6e3fcc, #4589ff);
+  --nav-bg: rgba(13,13,13,0.85);
+  --hero-glow1: rgba(69,137,255,0.12); --hero-glow2: rgba(165,110,255,0.08);
+  --video-border: #2a2a2a; --video-bg: #0a0a0a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.6; overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }

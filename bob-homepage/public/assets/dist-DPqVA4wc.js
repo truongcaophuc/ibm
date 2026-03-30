@@ -1,0 +1,1 @@
+import{i as e}from"./jsx-runtime-DkCKj1Ep.js";import{t}from"./react-DgAe88G_.js";var n=e(t(),1),r=globalThis?.document?n.useLayoutEffect:()=>{};export{r as t};

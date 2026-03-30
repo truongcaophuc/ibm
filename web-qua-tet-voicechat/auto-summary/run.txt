@@ -1,0 +1,5 @@
+tmux new -s real-autosummary
+tmux a -t real-autosummary
+
+
+uv run server.py  

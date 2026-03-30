@@ -1,0 +1,23 @@
+  
+services:
+  whisperx-api:
+    image: whisperx-docker-api-whisperx-api:latest
+    container_name: whisperx-api
+    ports:
+      - "5772:5772"
+    environment:
+      - PORT=5772
+      - TIMEOUT_SECONDS=1200
+      - DEFAULT_MODEL=large-v3
+      - DEBUG=false
+      - LD_LIBRARY_PATH=/usr/local/lib/python3.10/dist-packages/nvidia/cudnn/lib
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    volumes:
+      - ~/.cache/huggingface:/root/.cache  # Cache models to avoid re-downloading

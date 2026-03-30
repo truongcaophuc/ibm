@@ -1,0 +1,1 @@
+var e=`/assets/BobStanding-C5BdpngO.png`;export{e as t};

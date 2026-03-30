@@ -1,0 +1,1 @@
+function e(){return`public`}function t({audience:t,children:n}){return t===e()?n:null}export{e as n,t};

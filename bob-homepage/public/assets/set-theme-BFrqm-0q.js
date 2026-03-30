@@ -1,0 +1,1 @@
+import{a as e,t}from"./schemas-Cysrnqki.js";const n=e({theme:t([`system`,`light`,`dark`])});export{n as t};

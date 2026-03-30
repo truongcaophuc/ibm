@@ -1,0 +1,1 @@
+function e(e){return e}const t=[`en`,`de`,`es`,`fr`,`it`,`ja`,`ko`,`pl`,`pt`,`tr`,`zh-cn`,`zh-tw`],n=`en`,r=e({defaultLanguage:`en`,languages:[...t],hideLocale:`always`});export{r as n,t as r,n as t};
