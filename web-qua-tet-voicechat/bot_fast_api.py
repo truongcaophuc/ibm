@@ -138,11 +138,13 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
             model_obj=model_instance
         )
         '''
-        # WhisperX STT (fallback)
-        whisperx_stt = WhisperXAPISTTService(
-            api_url=os.getenv("STT_BASE_URL", ""),
-            aiohttp_session=session,
-        )
+        # WhisperX STT (fallback, only if available)
+        whisperx_stt = None
+        if WhisperXAPISTTService:
+            whisperx_stt = WhisperXAPISTTService(
+                api_url=os.getenv("STT_BASE_URL", ""),
+                aiohttp_session=session,
+            )
 
         # Qwen Chat STT
         qwen_stt = QwenChatSTTService(
