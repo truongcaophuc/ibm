@@ -427,8 +427,6 @@ class QwenChatSTTService(SegmentedSTTService):
         import wave
         import io
 
-        logger.debug(f"QwenChatSTT: run_stt called with {len(audio)} bytes")
-
         await self.start_processing_metrics()
         await self.start_ttfb_metrics()
 
@@ -494,9 +492,11 @@ class QwenChatSTTService(SegmentedSTTService):
                 await self.stop_processing_metrics()
                 logger.info(f"QwenChatSTT [{text}] lang={detected_lang} | ttfb={ttfb:.0f}ms total={total:.0f}ms")
 
-                # Log detected language but don't filter - Qwen sometimes misdetects Vietnamese
-                if detected_lang != "vietnamese":
-                    logger.warning(f"QwenChatSTT: detected {detected_lang} but proceeding anyway")
+                if detected_lang != "vietnamese" and self._fallback_stt:
+                    logger.warning(f"QwenChatSTT: non-Vietnamese ({detected_lang}), falling back to WhisperX")
+                    async for frame in self._fallback_stt.run_stt(audio):
+                        yield frame
+                    return
 
                 if text:
                     await self._handle_transcription(text, True, None)

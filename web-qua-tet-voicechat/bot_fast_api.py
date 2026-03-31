@@ -163,6 +163,7 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
             api_url=os.getenv("QWEN_STT_URL", ""),
             aiohttp_session=session,
             sample_rate=16000,
+            fallback_stt=whisperx_stt,
         )
 
         # Try Qwen, fallback to WhisperX if Qwen fails to initialize
