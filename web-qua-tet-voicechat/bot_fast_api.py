@@ -91,13 +91,19 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
         
         if transport_type == 'twilio':
             init_welcome = True
+            vad_params = VADParams(
+                confidence=float(os.getenv("VAD_CONFIDENCE", "0.5")),
+                start_secs=float(os.getenv("VAD_START_SECS", "0.2")),
+                stop_secs=float(os.getenv("VAD_STOP_SECS", "0.8")),
+                min_volume=float(os.getenv("VAD_MIN_VOLUME", "0.85")),
+            )
             ws_transport = FastAPIWebsocketTransport(
                 websocket=websocket_client,
                 params=FastAPIWebsocketParams(
                     audio_in_enabled=True,
                     audio_out_enabled=True,
                     add_wav_header=False,
-                    vad_analyzer=SileroVADAnalyzer(params=VADParams(min_volume=0.85, stop_secs=0.8)),
+                    vad_analyzer=SileroVADAnalyzer(params=vad_params),
                     serializer=TwilioFrameSerializer(
                         stream_sid="session_id",
                         call_sid="call_id",
@@ -108,13 +114,19 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
             )
         else:
             init_welcome = True
+            vad_params = VADParams(
+                confidence=float(os.getenv("VAD_CONFIDENCE", "0.5")),
+                start_secs=float(os.getenv("VAD_START_SECS", "0.2")),
+                stop_secs=float(os.getenv("VAD_STOP_SECS", "0.8")),
+                min_volume=float(os.getenv("VAD_MIN_VOLUME", "0.85")),
+            )
             ws_transport = FastAPIWebsocketTransport(
                 websocket=websocket_client,
                 params=FastAPIWebsocketParams(
                     audio_in_enabled=True,
                     audio_out_enabled=True,
                     add_wav_header=False,
-                    vad_analyzer=SileroVADAnalyzer(params=VADParams(min_volume=0.85, stop_secs=0.8)),
+                    vad_analyzer=SileroVADAnalyzer(params=vad_params),
                     serializer=ProtobufFrameSerializer(),
                 ),
             )
