@@ -49,6 +49,7 @@ except ImportError:
     WhisperXAPISTTService = None
 
 from custom_http_tts_service import CustomHttpTTSService
+from omi_tts_service import OmniVoiceTTSService
 from n8n_processor import N8NProcessor
 from n8n_processor_llm import N8NLLMService, ResponseMode
 from qwen_api_client import QwenChatSTTService
@@ -182,12 +183,11 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
         #     aiohttp_session=session,
         # )
 
-        # TTS Vieneu (CustomHttpTTSService)
-        tts = CustomHttpTTSService(
+        # TTS OmniVoice (F5-TTS)
+        tts = OmniVoiceTTSService(
             aiohttp_session=session,
-            base_url=os.getenv("TTS_BASE_URL", ""),
-            seed=10000,
-            voice=os.getenv("TTS_VOICE", "Giọng nữ 1"),
+            base_url=os.getenv("OMNIVOICE_TTS_BASE_URL", "http://10.120.80.3:8500"),
+            voice_id=os.getenv("OMNIVOICE_TTS_VOICE_ID", "nam2"),
             sample_rate=24000,
         )
 
