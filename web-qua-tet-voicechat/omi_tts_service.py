@@ -5,6 +5,7 @@ Calls OmniVoice-TTS REST API at localhost:8500
 
 import aiohttp
 import io
+import re
 import wave
 from typing import AsyncGenerator
 from loguru import logger
@@ -115,6 +116,15 @@ class OmniVoiceTTSService(TTSService):
         Yields:
             Frame: Audio and control frames containing the synthesized speech.
         """
+        # Skip emotion-only frames - don't read them aloud
+        if re.match(r'^\[EMO:\w+\]$', text.strip()):
+            return
+
+        # Strip inline emotion tags
+        text = re.sub(r'\[EMO:\w+\]\s*', '', text)
+        if not text.strip():
+            return
+
         # Split text into sentences
         sentences = process_tts_text(text)
         
