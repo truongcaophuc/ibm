@@ -37,11 +37,11 @@ except ImportError:
         # Split by:
         # 1. Comma + Vietnamese conjunctions: , và | , nhưng | , mà | , thì | , nên | , để
         # 2. Safe dot: NOT after uppercase letter or digit, followed by space or end
-        # 3. Standard terminators: ? ! ; : newline
-        # 4. Safe comma: not adjacent to digits (keeps 1,000 intact)
-        pattern = r'([,]\s*(?:và|nhưng|mà|thì|nên|để)\b|(?<![A-Z\d])[.](?=\s|$)|[?!;:\n]+|(?<!\d)[,]|[,](?!\d))'
+        # 3. Sentence terminators: ? ! newline (NOT ; or : — they rarely end sentences in Vietnamese)
+        # NOTE: no IGNORECASE — [A-Z] lookbehind must be case-sensitive to work correctly
+        pattern = r'([,]\s*(?:[Vv]à|[Nn]hưng|[Mm]à|[Tt]hì|[Nn]ên|[Đđ]ể)\b|(?<![A-Z\d])[.](?=\s|$)|[?!\n]+)'
 
-        parts = re.split(pattern, text, flags=re.IGNORECASE)
+        parts = re.split(pattern, text)
 
         sentences = []
         current_sentence = ""
@@ -49,7 +49,7 @@ except ImportError:
         for part in parts:
             if not part:
                 continue
-            if re.match(pattern, part, re.IGNORECASE):
+            if re.match(pattern, part):
                 current_sentence += part
                 word_count = len(current_sentence.strip().split())
                 if word_count > min_words:
