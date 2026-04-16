@@ -24,10 +24,44 @@ try:
     from utils.tts_rules import process_tts_text, end_of_sentence
     from utils.vi_nomalize import normalize_vietnamese_text
 except ImportError:
-    # Fallback if utils are missing
-    def process_tts_text(text): return [s.strip() for s in text.split('.') if s.strip()]
     def normalize_vietnamese_text(text): return text
     def end_of_sentence(text): return text + "." if text and text[-1] not in ".!?" else text
+
+    def process_tts_text(text, min_words=3):
+        """Vietnamese-aware sentence splitter for TTS.
+
+        Splits on punctuation but avoids breaking abbreviations (TP.HCM),
+        numbered lists (1. 2.), and numbers with decimals/commas (1.5, 1,000).
+        Merges short fragments (< min_words) into the next sentence.
+        """
+        # Split by:
+        # 1. Comma + Vietnamese conjunctions: , và | , nhưng | , mà | , thì | , nên | , để
+        # 2. Safe dot: NOT after uppercase letter or digit, followed by space or end
+        # 3. Standard terminators: ? ! ; : newline
+        # 4. Safe comma: not adjacent to digits (keeps 1,000 intact)
+        pattern = r'([,]\s*(?:và|nhưng|mà|thì|nên|để)\b|(?<![A-Z\d])[.](?=\s|$)|[?!;:\n]+|(?<!\d)[,]|[,](?!\d))'
+
+        parts = re.split(pattern, text, flags=re.IGNORECASE)
+
+        sentences = []
+        current_sentence = ""
+
+        for part in parts:
+            if not part:
+                continue
+            if re.match(pattern, part, re.IGNORECASE):
+                current_sentence += part
+                word_count = len(current_sentence.strip().split())
+                if word_count > min_words:
+                    sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            else:
+                current_sentence += part
+
+        if current_sentence.strip():
+            sentences.append(current_sentence.strip())
+
+        return sentences
 
 
 # Available voices from OmniVoice TTS
