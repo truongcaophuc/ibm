@@ -172,6 +172,10 @@ class OmniVoiceTTSService(TTSService):
         if not text.strip():
             return
 
+        # Normalize slashes between words (anh/chị → anh chị) to prevent
+        # TTS from reading "/" as "trong"
+        text = re.sub(r'(\w)/(\w)', r'\1 \2', text)
+
         # Split text into sentences
         sentences = process_tts_text(text)
         
