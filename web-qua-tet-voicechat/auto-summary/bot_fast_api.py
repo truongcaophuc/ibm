@@ -16,7 +16,7 @@ from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
 from pipecat.processors.aggregators.llm_context import LLMContext
 from pipecat.processors.aggregators.llm_response_universal import LLMContextAggregatorPair
-from pipecat.processors.frameworks.rtvi import RTVIConfig, RTVIObserver, RTVIProcessor
+from pipecat.processors.frameworks.rtvi import RTVIObserver, RTVIProcessor
 from pipecat.serializers.protobuf import ProtobufFrameSerializer
 from pipecat.transports.websocket.fastapi import (
     FastAPIWebsocketParams,
@@ -27,7 +27,7 @@ from pipecat.services.elevenlabs.stt import ElevenLabsRealtimeSTTService, Eleven
 from pipecat.services.openai.llm import OpenAILLMService
 
 from whisperx_api_client import WhisperXAPISTTService
-from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
+from pipecat.processors.aggregators.llm_context import LLMContext as OpenAILLMContext
 from pipecat.serializers.twilio import TwilioFrameSerializer
 
 load_dotenv(override=True)
@@ -99,7 +99,7 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
         #context_aggregator = LLMContextAggregatorPair(context)
 
         # RTVI events for Pipecat client UI
-        rtvi = RTVIProcessor(config=RTVIConfig(config=[]))
+        rtvi = RTVIProcessor()
 
         pipeline = Pipeline(
             [

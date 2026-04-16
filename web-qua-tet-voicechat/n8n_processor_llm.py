@@ -15,7 +15,6 @@ from pipecat.frames.frames import (
     LLMTextFrame,
 )
 from pipecat.services.openai.base_llm import BaseOpenAILLMService
-from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
 from pipecat.processors.aggregators.llm_context import LLMContext
 
 
@@ -302,7 +301,7 @@ class N8NLLMService(BaseOpenAILLMService):
         except Exception as e:
             yield f"Lỗi: {str(e)}"
 
-    async def _process_context_n8n_streaming(self, context: OpenAILLMContext | LLMContext):
+    async def _process_context_n8n_streaming(self, context: LLMContext | LLMContext):
         """Process context using n8n webhook with streaming."""
         messages = context.get_messages()
         user_text = self._extract_user_text(messages)
@@ -332,7 +331,7 @@ class N8NLLMService(BaseOpenAILLMService):
             print("sentence result", sentence)
             await self.push_frame(LLMTextFrame(sentence))        
     
-    async def _process_context_n8n(self, context: OpenAILLMContext | LLMContext):
+    async def _process_context_n8n(self, context: LLMContext | LLMContext):
         """Process context using n8n webhook with streaming."""
         messages = context.get_messages()
         user_text = self._extract_user_text(messages)
@@ -359,11 +358,11 @@ class N8NLLMService(BaseOpenAILLMService):
         elif result.get("text"):
             await self.push_frame(LLMTextFrame(result["text"]))
 
-    async def _process_context_openai(self, context: OpenAILLMContext | LLMContext):
+    async def _process_context_openai(self, context: LLMContext | LLMContext):
         """Process context using OpenAI LLM (parent implementation)."""
         await super()._process_context(context)
 
-    async def _process_context_hybrid(self, context: OpenAILLMContext | LLMContext):
+    async def _process_context_hybrid(self, context: LLMContext | LLMContext):
         """
         Hybrid mode: Call n8n first, let n8n decide if LLM should be used.
 
@@ -395,7 +394,7 @@ class N8NLLMService(BaseOpenAILLMService):
                     messages_copy[0]["content"] = result["system_prompt"]
                 else:
                     messages_copy.insert(0, {"role": "system", "content": result["system_prompt"]})
-                context = OpenAILLMContext(messages_copy)
+                context = LLMContext(messages_copy)
 
             await self._process_context_openai(context)
         else:
@@ -404,7 +403,7 @@ class N8NLLMService(BaseOpenAILLMService):
             if result.get("text"):
                 await self.push_frame(LLMTextFrame(result["text"]))
 
-    async def _process_context(self, context: OpenAILLMContext | LLMContext):
+    async def _process_context(self, context: LLMContext | LLMContext):
         """
         Process context based on response_mode.
 

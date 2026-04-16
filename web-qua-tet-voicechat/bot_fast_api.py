@@ -53,7 +53,7 @@ from omi_tts_service import OmniVoiceTTSService
 from n8n_processor import N8NProcessor
 from n8n_processor_llm import N8NLLMService, ResponseMode
 from qwen_api_client import QwenChatSTTService
-from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
+from pipecat.processors.aggregators.llm_context import LLMContext as OpenAILLMContext
 from pipecat.serializers.twilio import TwilioFrameSerializer
 
 load_dotenv(override=True)

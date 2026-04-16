@@ -18,7 +18,7 @@ from pipecat.frames.frames import EndFrame, TextFrame, TranscriptionFrame
 from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.transports.local.audio import LocalAudioTransport
 from pipecat.processors.aggregators.llm_response_universal import LLMContextAggregatorPair
-from pipecat.processors.frameworks.rtvi import RTVIConfig, RTVIObserver, RTVIProcessor
+from pipecat.processors.frameworks.rtvi import RTVIObserver, RTVIProcessor
 from pipecat.serializers.protobuf import ProtobufFrameSerializer
 from pipecat.services.google.gemini_live.llm import GeminiLiveLLMService
 from pipecat.transports.websocket.fastapi import (
