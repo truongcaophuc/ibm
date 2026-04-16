@@ -16,6 +16,7 @@ from pipecat.frames.frames import (
 )
 from pipecat.services.openai.base_llm import BaseOpenAILLMService
 from pipecat.processors.aggregators.llm_context import LLMContext
+from omi_tts_service import process_tts_text
 
 
 class ResponseMode(str, Enum):
@@ -356,7 +357,8 @@ class N8NLLMService(BaseOpenAILLMService):
             await self.push_frame(LLMTextFrame("Xin Anh/Chị vui lòng chờ trong giây lát."))
             await self._process_context_ragflow_streaming(result.get("text"))
         elif result.get("text"):
-            await self.push_frame(LLMTextFrame(result["text"]))
+            for chunk in process_tts_text(result["text"]):
+                await self.push_frame(LLMTextFrame(chunk))
 
     async def _process_context_openai(self, context: LLMContext | LLMContext):
         """Process context using OpenAI LLM (parent implementation)."""
@@ -401,7 +403,8 @@ class N8NLLMService(BaseOpenAILLMService):
             # Use n8n response directly
             await self.stop_ttfb_metrics()
             if result.get("text"):
-                await self.push_frame(LLMTextFrame(result["text"]))
+                for chunk in process_tts_text(result["text"]):
+                    await self.push_frame(LLMTextFrame(chunk))
 
     async def _process_context(self, context: LLMContext | LLMContext):
         """
@@ -438,7 +441,8 @@ class N8NLLMService(BaseOpenAILLMService):
             else:
                 await self.stop_ttfb_metrics()
                 if result.get("text"):
-                    await self.push_frame(LLMTextFrame(result["text"]))
+                    for chunk in process_tts_text(result["text"]):
+                        await self.push_frame(LLMTextFrame(chunk))
 
         elif self._response_mode == ResponseMode.HYBRID:
             await self._process_context_hybrid(context)

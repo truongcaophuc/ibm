@@ -36,20 +36,25 @@ except ImportError:
         """
         # Split by:
         # 1. Comma + Vietnamese conjunctions: , và | , nhưng | , mà | , thì | , nên | , để
-        # 2. Safe dot: NOT after uppercase letter or digit, followed by space or end
-        # 3. Sentence terminators: ? ! newline (NOT ; or : — they rarely end sentences in Vietnamese)
+        # 2. Comma/semicolon before numbered item: ", 2." "; 3." (splits numbered lists)
+        # 3. Safe dot: NOT after uppercase letter or digit, followed by space or end
+        # 4. Sentence terminators: ? ! : newline
         # NOTE: no IGNORECASE — [A-Z] lookbehind must be case-sensitive to work correctly
-        pattern = r'([,]\s*(?:[Vv]à|[Nn]hưng|[Mm]à|[Tt]hì|[Nn]ên|[Đđ]ể)\b|(?<![A-Z\d])[.](?=\s|$)|[?!\n]+)'
+        pattern = r'([,]\s*(?:[Vv]à|[Nn]hưng|[Mm]à|[Tt]hì|[Nn]ên|[Đđ]ể)\b|[,;](?=\s*\d+[.])|(?<![A-Z\d])[.](?=\s|$)|[?!:\n]+)'
 
         parts = re.split(pattern, text)
+
+        logger.debug(f"[TTS_SPLIT] Input: {text[:100]}...")
+        logger.debug(f"[TTS_SPLIT] Regex parts: {parts}")
 
         sentences = []
         current_sentence = ""
 
-        for part in parts:
+        for i, part in enumerate(parts):
             if not part:
                 continue
-            if re.match(pattern, part):
+            is_delimiter = (i % 2 == 1)  # re.split with capture group: odd indices are delimiters
+            if is_delimiter:
                 current_sentence += part
                 word_count = len(current_sentence.strip().split())
                 if word_count > min_words:
@@ -60,6 +65,10 @@ except ImportError:
 
         if current_sentence.strip():
             sentences.append(current_sentence.strip())
+
+        logger.info(f"[TTS_SPLIT] Result: {len(sentences)} chunks:")
+        for i, s in enumerate(sentences):
+            logger.info(f"[TTS_SPLIT]   {i+1}. {s[:80]}...")
 
         return sentences
 
@@ -120,8 +129,12 @@ class OmniVoiceTTSService(TTSService):
             sample_rate: Audio sample rate (default: 24000).
             **kwargs: Additional arguments passed to parent service.
         """
+        # Disable pipecat's built-in NLTK sentence splitter — it incorrectly
+        # splits numbered lists like "1. Foo 2. Bar". Our process_tts_text()
+        # in run_tts handles Vietnamese-aware splitting instead.
         super().__init__(
             sample_rate=sample_rate,
+            aggregate_sentences=False,
             **kwargs,
         )
 
