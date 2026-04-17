@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from loguru import logger
 from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.audio.vad.vad_analyzer import VADParams
+from pipecat.processors.audio.vad_processor import VADProcessor
 from pipecat.frames.frames import LLMRunFrame
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
@@ -90,21 +91,23 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
         ws_transport = None
         init_welcome = False
         
+        # VAD config — in pipecat v1.0.0, VAD is a pipeline processor, not a transport param
+        vad_params = VADParams(
+            confidence=float(os.getenv("VAD_CONFIDENCE", "0.5")),
+            start_secs=float(os.getenv("VAD_START_SECS", "0.2")),
+            stop_secs=float(os.getenv("VAD_STOP_SECS", "0.8")),
+            min_volume=float(os.getenv("VAD_MIN_VOLUME", "0.85")),
+        )
+        vad = VADProcessor(vad_analyzer=SileroVADAnalyzer(params=vad_params))
+
         if transport_type == 'twilio':
             init_welcome = True
-            vad_params = VADParams(
-                confidence=float(os.getenv("VAD_CONFIDENCE", "0.5")),
-                start_secs=float(os.getenv("VAD_START_SECS", "0.2")),
-                stop_secs=float(os.getenv("VAD_STOP_SECS", "0.8")),
-                min_volume=float(os.getenv("VAD_MIN_VOLUME", "0.85")),
-            )
             ws_transport = FastAPIWebsocketTransport(
                 websocket=websocket_client,
                 params=FastAPIWebsocketParams(
                     audio_in_enabled=True,
                     audio_out_enabled=True,
                     add_wav_header=False,
-                    vad_analyzer=SileroVADAnalyzer(params=vad_params),
                     serializer=TwilioFrameSerializer(
                         stream_sid="session_id",
                         call_sid="call_id",
@@ -115,19 +118,12 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
             )
         else:
             init_welcome = True
-            vad_params = VADParams(
-                confidence=float(os.getenv("VAD_CONFIDENCE", "0.5")),
-                start_secs=float(os.getenv("VAD_START_SECS", "0.2")),
-                stop_secs=float(os.getenv("VAD_STOP_SECS", "0.8")),
-                min_volume=float(os.getenv("VAD_MIN_VOLUME", "0.85")),
-            )
             ws_transport = FastAPIWebsocketTransport(
                 websocket=websocket_client,
                 params=FastAPIWebsocketParams(
                     audio_in_enabled=True,
                     audio_out_enabled=True,
                     add_wav_header=False,
-                    vad_analyzer=SileroVADAnalyzer(params=vad_params),
                     serializer=ProtobufFrameSerializer(),
                 ),
             )
@@ -229,6 +225,7 @@ async def run_bot(websocket_client, transport_type: Optional[str] = 'websocket')
         pipeline = Pipeline(
             [
                 ws_transport.input(),
+                vad,
                 rtvi,
                 stt,
                 context_aggregator.user(),
